@@ -1,5 +1,6 @@
 package com.orderflow.auth_service.controller;
 
+import com.orderflow.auth_service.dto.LoginRequest;
 import com.orderflow.auth_service.dto.RegisterRequest;
 import com.orderflow.auth_service.response.ApiResponse;
 import com.orderflow.auth_service.service.AuthService;
@@ -26,5 +27,17 @@ public class AuthController {
                 200,
                 true
         ));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request){
+        String token = authService.login(request);
+        ApiResponse response = new ApiResponse(LocalDateTime.now(),
+                "User logged in successfully",
+                200,
+                true,
+                token
+        );
+        return ResponseEntity.ok(response);
     }
 }

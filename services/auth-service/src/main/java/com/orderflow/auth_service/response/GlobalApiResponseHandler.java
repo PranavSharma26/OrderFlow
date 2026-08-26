@@ -36,7 +36,8 @@ public class GlobalApiResponseHandler implements ResponseBodyAdvice<Object> {
                     LocalDateTime.now(),
                     apiResponse.getMessage(),
                     apiResponse.getStatus(),
-                    apiResponse.isSuccess()
+                    apiResponse.isSuccess(),
+                    apiResponse.getData()
             );
         }
 

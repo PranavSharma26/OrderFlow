@@ -8,6 +8,7 @@ public class ApiResponse {
     private String message;
     private int status;
     private boolean success;
+    private String data;
 
     public ApiResponse(
             LocalDateTime timestamp,
@@ -19,6 +20,20 @@ public class ApiResponse {
         this.message = message;
         this.status = status;
         this.success = success;
+    }
+
+    public ApiResponse(
+            LocalDateTime timestamp,
+            String message,
+            int status,
+            boolean success,
+            String data
+    ) {
+        this.timestamp = timestamp;
+        this.message = message;
+        this.status = status;
+        this.success = success;
+        this.data = data;
     }
 
     public LocalDateTime getTimestamp() {
@@ -35,5 +50,9 @@ public class ApiResponse {
 
     public boolean isSuccess() {
         return success;
+    }
+
+    public String getData() {
+        return data;
     }
 }
