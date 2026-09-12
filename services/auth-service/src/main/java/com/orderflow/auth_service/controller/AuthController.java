@@ -2,9 +2,11 @@ package com.orderflow.auth_service.controller;
 
 import com.orderflow.auth_service.dto.LoginRequest;
 import com.orderflow.auth_service.dto.RegisterRequest;
+import com.orderflow.auth_service.entity.User;
 import com.orderflow.auth_service.response.ApiResponse;
 import com.orderflow.auth_service.service.AuthService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -39,5 +41,20 @@ public class AuthController {
                 token
         );
         return ResponseEntity.ok(response);
+    }
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication authentication) {
+
+        User user = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(
+                new ApiResponse(
+                        LocalDateTime.now(),
+                        "User fetched successfully",
+                        200,
+                        true,
+                        user.getEmail()
+                )
+        );
     }
 }
