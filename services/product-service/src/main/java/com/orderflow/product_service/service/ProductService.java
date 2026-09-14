@@ -1,10 +1,11 @@
 package com.orderflow.product_service.service;
 
+import com.orderflow.product_service.dto.StockItemRequest;
 import com.orderflow.product_service.entity.Product;
 import com.orderflow.product_service.exception.ProductNotFoundException;
 import com.orderflow.product_service.repository.ProductRepository;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -62,5 +63,29 @@ public class ProductService {
         Product existingProduct = getProductById(id);
 
         productRepository.delete(existingProduct);
+    }
+
+    // Decrease stock for all order items atomically
+    @Transactional
+    public boolean decreaseStock(
+            List<StockItemRequest> items
+    ) {
+
+        for (StockItemRequest item : items) {
+
+            int updatedRows = productRepository.decreaseStock(
+                    item.getProductId(),
+                    item.getQuantity()
+            );
+
+            if (updatedRows == 0) {
+                throw new IllegalStateException(
+                        "Insufficient stock for product: "
+                                + item.getProductId()
+                );
+            }
+        }
+
+        return true;
     }
 }

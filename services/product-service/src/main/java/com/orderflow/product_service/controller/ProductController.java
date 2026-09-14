@@ -1,6 +1,7 @@
 package com.orderflow.product_service.controller;
 
 import com.orderflow.product_service.dto.ProductRequest;
+import com.orderflow.product_service.dto.StockItemRequest;
 import com.orderflow.product_service.entity.Product;
 import com.orderflow.product_service.service.ProductService;
 
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -75,5 +77,18 @@ public class ProductController {
             @PathVariable Long id) {
 
         productService.deleteProduct(id);
+    }
+
+    // CUSTOMER - Decrease stock after successful payment validation
+    @PatchMapping("/stock/decrease")
+    public Map<String, Object> decreaseStock(
+            @Valid @RequestBody List<StockItemRequest> items) {
+
+        productService.decreaseStock(items);
+
+        return Map.of(
+                "success", true,
+                "message", "Stock decreased successfully"
+        );
     }
 }
