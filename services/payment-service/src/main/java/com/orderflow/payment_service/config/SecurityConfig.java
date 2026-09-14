@@ -1,10 +1,8 @@
-package com.orderflow.order_service.config;
+package com.orderflow.payment_service.config;
 
-import com.orderflow.order_service.security.JwtAuthenticationFilter;
-
+import com.orderflow.payment_service.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -34,14 +32,6 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-
-                        // Only CUSTOMER can create orders
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/v1/orders"
-                        ).hasRole("CUSTOMER")
-
-                        // All other order endpoints require authentication
                         .anyRequest().authenticated()
                 )
 

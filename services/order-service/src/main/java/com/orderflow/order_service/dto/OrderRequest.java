@@ -1,27 +1,24 @@
 package com.orderflow.order_service.dto;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 public class OrderRequest {
 
-    @NotNull(message = "Total amount is required")
-    @DecimalMin(
-            value = "0.01",
-            message = "Total amount must be greater than 0"
-    )
-    private BigDecimal totalAmount;
+    @NotEmpty(message = "Order must contain at least one item")
+    @Valid
+    private List<OrderItemRequest> items;
 
     public OrderRequest() {
     }
 
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
+    public List<OrderItemRequest> getItems() {
+        return items;
     }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setItems(List<OrderItemRequest> items) {
+        this.items = items;
     }
 }

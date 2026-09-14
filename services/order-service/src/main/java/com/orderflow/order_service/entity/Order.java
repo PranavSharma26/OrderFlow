@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -17,24 +19,54 @@ public class Order {
     @Column(nullable = false)
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
 
-    @Column(nullable = false)
+    @OneToMany(
+            mappedBy = "order",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<OrderItem> items = new ArrayList<>();
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
     public Order() {
     }
 
-    public Order(Long userId, BigDecimal totalAmount, OrderStatus status) {
+    public Order(
+            Long userId,
+            BigDecimal totalAmount,
+            OrderStatus status
+    ) {
         this.userId = userId;
         this.totalAmount = totalAmount;
         this.status = status;
-        this.createdAt = LocalDateTime.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    public void addItem(OrderItem item) {
+        items.add(item);
+        item.setOrder(this);
     }
 
     public Long getId() {
@@ -65,7 +97,19 @@ public class Order {
         this.status = status;
     }
 
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }

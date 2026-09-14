@@ -1,6 +1,8 @@
 package com.orderflow.order_service.controller;
 
+import com.orderflow.order_service.dto.OrderItemResponse;
 import com.orderflow.order_service.dto.OrderRequest;
+import com.orderflow.order_service.dto.OrderResponse;
 import com.orderflow.order_service.dto.OrderStatusUpdateRequest;
 import com.orderflow.order_service.entity.Order;
 import com.orderflow.order_service.response.ApiResponse;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -34,12 +37,14 @@ public class OrderController {
 
         Order order = orderService.createOrder(userId, request);
 
+        OrderResponse orderResponse = toOrderResponse(order);
+
         ApiResponse response = new ApiResponse(
                 LocalDateTime.now(),
                 "Order created successfully",
                 200,
                 true,
-                order
+                orderResponse
         );
 
         return ResponseEntity.ok(response);
@@ -55,12 +60,16 @@ public class OrderController {
         List<Order> orders =
                 orderService.getOrdersByUserId(userId);
 
+        List<OrderResponse> orderResponses = orders.stream()
+                .map(this::toOrderResponse)
+                .collect(Collectors.toList());
+
         ApiResponse response = new ApiResponse(
                 LocalDateTime.now(),
                 "Orders fetched successfully",
                 200,
                 true,
-                orders
+                orderResponses
         );
 
         return ResponseEntity.ok(response);
@@ -97,7 +106,7 @@ public class OrderController {
                 "Order fetched successfully",
                 200,
                 true,
-                order
+                toOrderResponse(order)
         );
 
         return ResponseEntity.ok(response);
@@ -138,7 +147,7 @@ public class OrderController {
                 "Order status updated successfully",
                 200,
                 true,
-                order
+                toOrderResponse(order)
         );
 
         return ResponseEntity.ok(response);
@@ -177,10 +186,31 @@ public class OrderController {
                 "Order cancelled successfully",
                 200,
                 true,
-                order
+                toOrderResponse(order)
         );
 
         return ResponseEntity.ok(response);
     }
 
+    private OrderResponse toOrderResponse(Order order) {
+
+        List<OrderItemResponse> items = order.getItems()
+                .stream()
+                .map(item -> new OrderItemResponse(
+                        item.getId(),
+                        item.getProductId(),
+                        item.getQuantity(),
+                        item.getPrice()
+                ))
+                .collect(Collectors.toList());
+
+        return new OrderResponse(
+                order.getId(),
+                order.getUserId(),
+                order.getTotalAmount(),
+                order.getStatus(),
+                order.getCreatedAt(),
+                items
+        );
+    }
 }
